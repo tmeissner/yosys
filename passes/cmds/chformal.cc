@@ -59,6 +59,7 @@ struct ChformalPass : public Pass {
 		log("    -assume2assert\n");
 		log("    -live2fair\n");
 		log("    -fair2live\n");
+		log("    -assert2live\n");
 		log("        change the roles of cells as indicated. these options can be combined\n");
 		log("\n");
 	}
@@ -68,6 +69,7 @@ struct ChformalPass : public Pass {
 		bool assume2assert = false;
 		bool live2fair = false;
 		bool fair2live = false;
+		bool assert2live = false;
 
 		pool<IdString> constr_types;
 		char mode = 0;
@@ -131,6 +133,11 @@ struct ChformalPass : public Pass {
 			}
 			if ((mode == 0 || mode == 'c') && args[argidx] == "-fair2live") {
 				fair2live = true;
+				mode = 'c';
+				continue;
+			}
+			if ((mode == 0 || mode == 'c') && args[argidx] == "-assert2live") {
+				assert2live = true;
 				mode = 'c';
 				continue;
 			}
@@ -273,6 +280,8 @@ struct ChformalPass : public Pass {
 					else if (live2fair && cell->type == ID($live))
 						cell->type = ID($fair);
 					else if (fair2live && cell->type == ID($fair))
+						cell->type = ID($live);
+					else if (assert2live && cell->type == ID($assert))
 						cell->type = ID($live);
 			}
 		}
